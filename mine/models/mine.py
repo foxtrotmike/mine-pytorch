@@ -16,7 +16,7 @@ from mine.models.layers import ConcatLayer, CustomSequential
 
 import pytorch_lightning as pl
 from pytorch_lightning import Trainer
-import mine.utils
+import mine.utils as utils
 
 torch.autograd.set_detect_anomaly(True)
 
