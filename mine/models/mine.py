@@ -199,7 +199,7 @@ class MutualInformationEstimator(pl.LightningModule):
         self.avg_test_mi = avg_mi
         return {'avg_test_mi': avg_mi, 'log': tensorboard_logs}
 
-    @pl.data_loader
+    
     def train_dataloader(self):
         if self.train_loader:
             return self.train_loader
@@ -210,7 +210,7 @@ class MutualInformationEstimator(pl.LightningModule):
             batch_size=self.kwargs['batch_size'], shuffle=True)
         return train_loader
 
-    @pl.data_loader
+    
     def test_dataloader(self):
         if self.test_loader:
             return self.train_loader
