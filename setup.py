@@ -17,7 +17,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires = [
-        'pytorch_lightning>=0.6.0',
+        'pytorch_lightning==0.9.0rc12',
         'matplotlib>=3.1.2',
         'numpy>=1.17.4',
         'tqdm>=4.40.2',
