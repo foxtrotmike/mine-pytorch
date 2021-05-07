@@ -154,11 +154,11 @@ class IBNetwork(pl.LightningModule):
         tensorboard_logs = {'test_accuracy': avg_acc}
         return {'avg_test_accuracy': avg_acc, 'log': tensorboard_logs}
 
-    @pl.data_loader
+    #@pl.data_loader
     def train_dataloader(self):
         return load_dataloader('mnist', 256, train=True)
 
-    @pl.data_loader
+    #@pl.data_loader
     def val_dataloader(self):
         return load_dataloader('mnist', 256, train=False)
 
