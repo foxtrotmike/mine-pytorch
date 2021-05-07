@@ -15,32 +15,32 @@ from mine.datasets import to_onehot
 
 
 class GAN(pl.LightningModule):
-    def __init__(self, input_dim, output_dim,
+    def __init__(self, idim, odim,
                  discriminator_type='linear',
                  generator_type='linear',
                  conditional_dim=0,
                  mi_estimator=None,
-                 device='cpu',
+                 idevice='cpu',
                  **kwargs):
         super().__init__()
 
-        self.input_dim = input_dim
-        self.device = device
+        self.idim = idim
+        self.idevice = idevice
 
         self.generator_type = generator_type
 
         if generator_type == 'linear':
             self.generator = LinearGenerator(
-                input_dim + conditional_dim, output_dim).to(device)
+                idim + conditional_dim, odim).to(idevice)
         elif generator_type == 'veegan':
             self.generator = DCGanGenerator(
-                latent_dim=input_dim + conditional_dim
-            ).to(device)
+                latent_dim=idim + conditional_dim
+            ).to(idevice)
 
         if discriminator_type == 'linear':
-            self.discriminator = LinearDiscriminator(output_dim).to(device)
+            self.discriminator = LinearDiscriminator(odim).to(idevice)
         elif discriminator_type == 'veegan':
-            self.discriminator = DCGanDiscriminator().to(device)
+            self.discriminator = DCGanDiscriminator().to(idevice)
 
         self.loss = nn.BCELoss()
 
@@ -59,14 +59,14 @@ class GAN(pl.LightningModule):
 
         self.kwargs = kwargs
 
-    # Samples from  N(0, I) of dim : input_dim
+    # Samples from  N(0, I) of dim : idim
 
     def sample_z(self, N, conditional):
         if self.generator_type == 'linear' or self.generator_type == 'veegan':
-            z = torch.rand((N, self.input_dim)).to(self.device) * 2 - 1
+            z = torch.rand((N, self.idim)).to(self.idevice) * 2 - 1
 
             if conditional is not None:
-                conditional = conditional.to(self.device)
+                conditional = conditional.to(self.idevice)
                 if len(conditional.shape) < 2:
                     conditional = conditional.unsqueeze(0)
 
@@ -145,8 +145,8 @@ class GAN(pl.LightningModule):
             if conditional is not None:
                 conditional = conditional.float().cuda()
 
-        valid = torch.ones((x_real.shape[0], 1)).to(self.device)
-        fake = torch.zeros((x_real.shape[0], 1)).to(self.device)
+        valid = torch.ones((x_real.shape[0], 1)).to(self.idevice)
+        fake = torch.zeros((x_real.shape[0], 1)).to(self.idevice)
 
         g_loss = 0
         d_loss = 0
@@ -184,7 +184,7 @@ class GAN(pl.LightningModule):
             # Discriminator
             disc_real = self.discriminator(x_real)
             if self.smoothing:
-                valid = valid - 0.3*torch.rand(valid.shape).to(self.device)
+                valid = valid - 0.3*torch.rand(valid.shape).to(self.idevice)
             loss_real = self.loss(disc_real, valid)
 
             disc_fake = self.discriminator(self.generated.detach())
